@@ -115,10 +115,11 @@ var loadPhantomInstance = function (sharedObject) {
 		var PATH_TO_PHANTOM = '/usr/local/bin/phantomjs';
 		var options = {
 			phantomPath: PATH_TO_PHANTOM,
-			loadImages: true,
+			loadImages: false,
 			injectJquery: true,
 			webSecurity: false,
-			ignoreSSLErrors: true,
+			ignoreSSLErrors: false,
+			sslProtocol: 'any',
 			injectBluebird: true,
 			bluebirdDebug: true,
 			timeout: 5000,
@@ -315,10 +316,14 @@ var openFirstPage = function(sharedObject) {
 var openNextPage = function(sharedObject) {
 	return new Promise(function (resolve, reject) {
 		var repeat = 0;
+		var tempurl = '';
 		console.log('getting data...');
 		sharedObject.phantom
+			.waitForSelector('a.gspr.next')
 			.evaluate(function() {
 				var selector = document.querySelector('a.gspr.next');
+				var erl = selector.getAttribute('href');
+				console.log('erl:', erl);
 				if(selector != null){
 					setTimeout(function () {
 						selector.click('href');
