@@ -121,8 +121,8 @@ var loadPhantomInstance = function (sharedObject) {
 			ignoreSSLErrors: true,
 			injectBluebird: true,
 			bluebirdDebug: true,
-			timeout: 20000,
-			interval: 20
+			timeout: 5000,
+			interval: 10
 		};
 
 		var phantomInstance = new Horseman(options);
