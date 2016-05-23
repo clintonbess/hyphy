@@ -7,6 +7,7 @@ var fs = require('fs')
 	, request = require('request');
 
 var urlToScrape = 'http://www.ebay.com/sch/i.html?_sacat=0&_nkw=secret+of+mana+2&_frs=1';
+var nextList = [];
 var scrapeHead = function(sharedObject) {
 	// init the sharedobject
 	return new Promise(function(resolve, reject) {
@@ -115,7 +116,7 @@ var loadPhantomInstance = function (sharedObject) {
 		var PATH_TO_PHANTOM = '/usr/local/bin/phantomjs';
 		var options = {
 			phantomPath: PATH_TO_PHANTOM,
-			loadImages: false,
+			loadImages: true,
 			injectJquery: true,
 			webSecurity: false,
 			ignoreSSLErrors: true,
@@ -172,22 +173,7 @@ var scrapeItem = function(searchObj, index, callback) {
 	.then(implementOptions)
 	.then(openFirstPage)
 	.then(openNextPage)
-	.then(openNextPage)
-	.then(openNextPage)
-	.then(openNextPage)
-	.then(openNextPage)
-	.then(openNextPage)
-	.then(openNextPage)
-	.then(openNextPage)
-	.then(openNextPage)
-	.then(openNextPage)
-	.then(openNextPage)
-	.then(openNextPage)
-	.then(openNextPage)
-	.then(openNextPage)
-	.then(openNextPage)
-	.then(openNextPage)
-	.then(openNextPage)
+	
 	// .then(checkForMorePages)
 	.then(function(){
 		sharedObject.phantom.close();
@@ -197,7 +183,7 @@ var scrapeItem = function(searchObj, index, callback) {
 		callback();
 	})
 	.catch(function (error){
-		// sharedObject.phantom.close();
+		sharedObject.phantom.close();
 		console.log('Error encountered while scraping the title: %s\n', searchObj.searchTitle, error);
 		callback();
 	});
@@ -411,11 +397,10 @@ var openNextPage = function(sharedObject) {
 				return(erl)
 			})
 			.then(function(url) {
+					console.log('debugging url type: ', typeof url);
 					sharedObject.currentURL = url;
 			})
 			.close()
-			// .reload()
-			
 		// 	.then(function () {
 		// 		if(repeat && (sharedObject.pagesScraped < 20)) {
 		// 			sharedObject.phantom.waitForNextPage()
@@ -436,7 +421,12 @@ var openNextPage = function(sharedObject) {
 		// 	});
 		//deubgging
 		.then(function() {
-			resolve(sharedObject);
+			if(typeof sharedObject.currentURL == 'string') 
+				openNextPage(sharedObject).then(function() {
+					resolve(sharedObject);
+				})
+			else
+				resolve(sharedObject);
 		})
 		.catch(function (error) {
 				console.log('Error encountered inside \'openNextPage\'');
