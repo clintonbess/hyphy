@@ -118,7 +118,7 @@ var loadPhantomInstance = function (sharedObject) {
 			loadImages: false,
 			injectJquery: true,
 			webSecurity: false,
-			ignoreSSLErrors: false,
+			ignoreSSLErrors: true,
 			sslProtocol: 'any',
 			injectBluebird: true,
 			bluebirdDebug: true,
@@ -319,7 +319,7 @@ var openNextPage = function(sharedObject) {
 		var tempurl = '';
 		console.log('getting data...');
 		sharedObject.phantom
-			.waitForSelector('a.gspr.next')
+			.waitForNextPage()
 			.evaluate(function() {
 				var selector = document.querySelector('a.gspr.next');
 				var erl = selector.getAttribute('href');
