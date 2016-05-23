@@ -172,6 +172,22 @@ var scrapeItem = function(searchObj, index, callback) {
 	.then(implementOptions)
 	.then(openFirstPage)
 	.then(openNextPage)
+	.then(openNextPage)
+	.then(openNextPage)
+	.then(openNextPage)
+	.then(openNextPage)
+	.then(openNextPage)
+	.then(openNextPage)
+	.then(openNextPage)
+	.then(openNextPage)
+	.then(openNextPage)
+	.then(openNextPage)
+	.then(openNextPage)
+	.then(openNextPage)
+	.then(openNextPage)
+	.then(openNextPage)
+	.then(openNextPage)
+	.then(openNextPage)
 	// .then(checkForMorePages)
 	.then(function(){
 		sharedObject.phantom.close();
@@ -181,7 +197,7 @@ var scrapeItem = function(searchObj, index, callback) {
 		callback();
 	})
 	.catch(function (error){
-		sharedObject.phantom.close();
+		// sharedObject.phantom.close();
 		console.log('Error encountered while scraping the title: %s\n', searchObj.searchTitle, error);
 		callback();
 	});
@@ -294,15 +310,16 @@ var openFirstPage = function(sharedObject) {
 			.open(sharedObject.currentURL) // maybe we can search from any ebay page
 			// .waitForNextPage()
 			// .screenshot(sharedObject.screenshotPath)
-			// .evaluate(function() {
-				// var selector = document.querySelector('a.gspr.next');
+			.evaluate(function() {
+				var selector = document.querySelector('a.gspr.next');
 				// selector.click('href');
-				// return selector;
-			// })
-			// .then(function(selector) {
-			// 	console.log('Here is our selector: ', selector);
-			// })
+				return selector.getAttribute('href');
+			})
+			.then(function(selector) {
+				sharedObject.currentURL = selector;
+			})
 			// .waitForNextPage()
+			.close()
 			.then(function () {
 				// setTimeout(function() {resolve(sharedObject) }, 2000);
 				resolve(sharedObject);
@@ -313,63 +330,118 @@ var openFirstPage = function(sharedObject) {
 			});
 	});
 };
+// var openNextPage = function(sharedObject) {
+// 	return new Promise(function (resolve, reject) {
+// 		var repeat = 0;
+// 		var tempurl = '';
+// 		console.log('getting data...');
+// 		sharedObject.phantom
+// 			.waitForNextPage()
+// 			.evaluate(function() {
+// 				var selector = document.querySelector('a.gspr.next');
+// 				var erl = selector.getAttribute('href');
+// 				console.log('erl:', erl);
+// 				if(selector != null){
+// 					setTimeout(function () {
+// 						selector.click('href');
+// 					}, 20);
+// 				}
+// 				return(selector != null);
+// 			})
+// 			.then(function(selector) {
+// 				repeat = selector;
+// 			})
+// 			.then(function () {
+// 				if(repeat && (sharedObject.pagesScraped < 20)) {
+// 					sharedObject.pagesScraped++;
+// 					sharedObject.phantom.waitForNextPage()
+// 					.then(function () {
+// 						openNextPage(sharedObject)
+// 						.then(function () {
+// 							resolve(sharedObject);	
+// 						})
+// 						.catch(function (error) {
+// 							console.log('Error encountered inside \'openNextPage recurs1\' ' + error );
+// 							// if(error == 'Error: Failed to load url') {
+// 							// 	loadPhantomInstance(sharedObject)
+// 							// 	.then(openNextPage)
+// 							// 	.then(function() {
+// 							// 		resolve(sharedObject);	
+// 							// 	});
+// 							// }
+								
+// 							// else
+// 								reject(error);
+// 						});
+// 					})
+// 					.catch(function (error) {
+// 						console.log('Error encountered inside \'openNextPage recurs2\' ' + error);
+// 						reject(error);
+// 					});
+// 				}
+// 				else
+// 					resolve(sharedObject);
+// 			})
+// 			.catch(function (error) {
+
+// 				console.log('Error encountered inside \'openNextPage\'');
+// 				reject(error);
+// 			});
+// 	});
+// };
+
 var openNextPage = function(sharedObject) {
+	loadPhantomInstance(sharedObject);
 	return new Promise(function (resolve, reject) {
 		var repeat = 0;
 		var tempurl = '';
 		console.log('getting data...');
 		sharedObject.phantom
-			.waitForNextPage()
+			.open(sharedObject.currentURL)
 			.evaluate(function() {
 				var selector = document.querySelector('a.gspr.next');
 				var erl = selector.getAttribute('href');
 				console.log('erl:', erl);
-				if(selector != null){
-					setTimeout(function () {
-						selector.click('href');
-					}, 20);
-				}
-				return(selector != null);
+				// if(selector != null){
+				// 	setTimeout(function () {
+				// 		selector.click('href');
+				// 	}, 1000);
+				// }
+				// return(selector != null);
+				return(erl)
 			})
-			.then(function(selector) {
-				repeat = selector;
+			.then(function(url) {
+					sharedObject.currentURL = url;
 			})
-			.then(function () {
-				if(repeat && (sharedObject.pagesScraped < 20)) {
-					sharedObject.pagesScraped++;
-					sharedObject.phantom.waitForNextPage()
-					.then(function () {
-						openNextPage(sharedObject)
-						.then(function () {
-							resolve(sharedObject);	
-						})
-						.catch(function (error) {
-							console.log('Error encountered inside \'openNextPage recurs1\' ' + error );
-							// if(error == 'Error: Failed to load url') {
-							// 	loadPhantomInstance(sharedObject)
-							// 	.then(openNextPage)
-							// 	.then(function() {
-							// 		resolve(sharedObject);	
-							// 	});
-							// }
-								
-							// else
-								reject(error);
-						});
-					})
-					.catch(function (error) {
-						console.log('Error encountered inside \'openNextPage recurs2\' ' + error);
-						reject(error);
-					});
-				}
-				else
-					resolve(sharedObject);
-			})
-			.catch(function (error) {
-
+			.close()
+			// .reload()
+			
+		// 	.then(function () {
+		// 		if(repeat && (sharedObject.pagesScraped < 20)) {
+		// 			sharedObject.phantom.waitForNextPage()
+		// 			.then(function () {
+		// 				resolve(sharedObject);	
+		// 			})
+		// 			.catch(function (error) {
+		// 				console.log('Error encountered inside \'openNextPage recurs1\' ' + error );
+		// 					reject(error);
+		// 			});
+		// 		}
+		// 		else
+		// 			resolve(sharedObject);
+		// 	})
+		// 	.catch(function (error) {
+		// 		console.log('Error encountered inside \'openNextPage\'');
+		// 		reject(error);
+		// 	});
+		//deubgging
+		.then(function() {
+			resolve(sharedObject);
+		})
+		.catch(function (error) {
 				console.log('Error encountered inside \'openNextPage\'');
 				reject(error);
-			});
+		});
 	});
 };
 
