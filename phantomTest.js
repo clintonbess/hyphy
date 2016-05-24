@@ -73,7 +73,8 @@ var Horseman = require('node-horseman')
 				performAction(phantomInstance)
 				break;
 			case 'crawl_megamanx':
-				performAction(phantomInstance)
+				phantomInstance.close();
+				performAction()
 				break;
 			default:
 				phantomInstance.close();
